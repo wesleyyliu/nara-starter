@@ -69,12 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
     ],
   };
 
-  // Hover effect logic
+  // Modify the hover effect logic to make it responsive
   const deerAreas = [
     {
       id: "deer1",
       top: 530,
-      left: 400,
+      left: 380,
       width: 150,
       height: 250,
       circleImage: "assets/circle_selfcare.png",
@@ -82,8 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       id: "deer2",
-      top: 570,
-      left: 1510,
+      top: 520,
+      left: 1350,
       width: 100,
       height: 200,
       circleImage: "assets/circle_lovedones.png",
@@ -91,8 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       id: "deer3",
-      top: 630,
-      left: 1310,
+      top: 530,
+      left: 1150,
       width: 100,
       height: 200,
       circleImage: "assets/circle_pets.png",
@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       id: "deer4",
       top: 540,
-      left: 800,
+      left: 700,
       width: 120,
       height: 220,
       circleImage: "assets/circle_thehome.png",
@@ -109,21 +109,21 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       id: "deer5",
-      top: 600,
-      left: 1150,
+      top: 500,
+      left: 1000,
       width: 90,
       height: 160,
       circleImage: "assets/circle_themind.png",
       category: "mind",
     },
     {
-      id: "deer6", // Unique ID for the new hover area
-      top: 30, // Adjust the top position to place it in the top right-hand corner
-      left: 1280, // Adjust the left position to place it in the top right-hand corner
-      width: 150, // Adjust the width of the hover area
-      height: 150, // Adjust the height of the hover area
-      circleImage: "assets/circle_somethingelse.png", // New image for the hover area
-      category: "others", // Link to the "Others" category
+      id: "deer6",
+      top: 30,
+      left: 1140,
+      width: 150,
+      height: 150,
+      circleImage: "assets/circle_somethingelse.png",
+      category: "others",
     },
   ];
 
@@ -619,6 +619,87 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Array of encouraging messages for the speech bubble
+  const encouragingMessages = [
+    "Great job!",
+    "You're making progress!",
+    "Keep going!",
+    "Excellent work!",
+    "You're doing amazing!",
+    "Well done!",
+    "That's the spirit!",
+    "Fantastic effort!",
+    "You got this!",
+    "One step closer!",
+    "Proud of you!",
+    "Amazing work!",
+    "Look at you go!",
+    "You're on fire!",
+    "Crushing it!",
+  ];
+  
+  // Hardcoded positions for speech bubbles for each deer background
+  const speechBubblePositions = {
+    daily: [
+      {left: 1000, top: 400},
+    ],
+    home: [
+      {left: 1000, top: 570},
+    ],
+    pet: [
+      {left: 1000, top: 500},
+    ],
+    friends: [
+      {left: 1200, top: 500},
+    ],
+    mind: [
+      {left: 1050, top: 500},
+    ],
+    others: [
+      {left: 600, top: 250},
+    ]
+  };
+  
+  // Show a speech bubble with an encouraging message near the deer
+  function showSpeechBubble(category, backgroundIndex) {
+    // Remove any existing speech bubbles
+    const existingBubble = document.querySelector('.speech-bubble');
+    if (existingBubble) {
+      existingBubble.remove();
+    }
+    
+    // Create a new speech bubble
+    const bubble = document.createElement('div');
+    bubble.className = 'speech-bubble';
+    
+    // Get a random encouraging message
+    const randomIndex = Math.floor(Math.random() * encouragingMessages.length);
+    bubble.textContent = encouragingMessages[randomIndex];
+    
+    // Get position for the current category and background index
+    // Index is 0-based in the array but 1-based in the parameter
+    const position = speechBubblePositions[category][0]
+    
+    bubble.style.left = `${position.left}px`;
+    bubble.style.top = `${position.top}px`;
+    
+    // Add the bubble to the page
+    document.body.appendChild(bubble);
+    
+    // Animate the bubble
+    setTimeout(() => {
+      bubble.style.opacity = '1';
+    }, 10);
+    
+    // Remove the bubble after 3 seconds
+    setTimeout(() => {
+      bubble.style.opacity = '0';
+      setTimeout(() => {
+        bubble.remove();
+      }, 500);
+    }, 3000);
+  }
+  
   function renderTasks(tasks, backgroundIndex, category) {
     const tasksHeader =
       document.getElementById("tasks-header") || document.createElement("div");
@@ -666,13 +747,16 @@ document.addEventListener("DOMContentLoaded", () => {
       taskItem.dataset.index = tasks.indexOf(task);
 
       const checkbox = taskItem.querySelector("input[type='checkbox']");
-      checkbox.addEventListener("change", () => {
+      checkbox.addEventListener("change", (event) => {
         const originalIndex = tasks.indexOf(task);
         tasks[originalIndex].completed = checkbox.checked;
-
-        if (tasks[originalIndex].completed) {
-          const deleteButton = taskItem.querySelector(".delete-task");
-          if (deleteButton) deleteButton.remove();
+        
+        // Show speech bubble with encouraging message when task is checked
+        if (checkbox.checked) {
+          // Get the current background index after updating
+          const { backgroundIndex: newBackgroundIndex } = updateBackgroundState(tasks, category);
+          // Show speech bubble near the deer for the current background
+          showSpeechBubble(category, newBackgroundIndex);
         }
 
         let newPosition = 0;
