@@ -236,11 +236,15 @@ document.addEventListener("DOMContentLoaded", () => {
               "transitionend",
               () => {
                 currentBg.remove();
+                // Show a new inspirational quote with each background change
+                showInspirationQuote();
                 resolve();
               },
               { once: true }
             );
           } else {
+            // Show a new inspirational quote with each background change
+            showInspirationQuote();
             resolve();
           }
         });
@@ -638,6 +642,25 @@ document.addEventListener("DOMContentLoaded", () => {
     "Crushing it!",
   ];
   
+  // Array of inspirational quotes for the overlay
+  const inspirationalQuotes = [
+    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+    { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+    { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+    { text: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
+    { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+    { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+    { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
+    { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+    { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama" },
+    { text: "The power of imagination makes us infinite.", author: "John Muir" },
+    { text: "Wherever you go, go with all your heart.", author: "Confucius" },
+    { text: "Everything you've ever wanted is on the other side of fear.", author: "George Addair" },
+    { text: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein" },
+    { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+    { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
+  ];
+  
   // Hardcoded positions for speech bubbles for each deer background
   const speechBubblePositions = {
     daily: [
@@ -700,6 +723,63 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
   
+  // Function to display an inspirational quote overlay in the top right corner
+  function showInspirationQuote() {
+    // Remove any existing quote overlays
+    const existingQuote = document.querySelector('.quote-overlay');
+    if (existingQuote) {
+      existingQuote.remove();
+    }
+    
+    // Get a random quote
+    const randomIndex = Math.floor(Math.random() * inspirationalQuotes.length);
+    const quote = inspirationalQuotes[randomIndex];
+    
+    // Create the quote overlay
+    const quoteOverlay = document.createElement('div');
+    quoteOverlay.className = 'quote-overlay';
+    
+    // Set explicit positioning and styling
+    quoteOverlay.style.position = 'fixed';
+    quoteOverlay.style.top = '10px';
+    quoteOverlay.style.right = '20px';
+    quoteOverlay.style.width = '200px';
+    quoteOverlay.style.height = '50px';
+    quoteOverlay.style.overflow = 'auto';
+    quoteOverlay.style.padding = '6px 8px';
+    quoteOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+    quoteOverlay.style.borderRadius = '5px';
+    quoteOverlay.style.boxShadow = '0 1px 4px rgba(0, 0, 0, 0.1)';
+    quoteOverlay.style.zIndex = '1000';
+    quoteOverlay.style.fontSize = '11px';
+    quoteOverlay.style.lineHeight = '1.2';
+    quoteOverlay.style.textAlign = 'right';
+    
+    // Truncate long quotes
+    let displayText = quote.text;
+    if (displayText.length > 70) {
+      displayText = displayText.substring(0, 67) + '...';
+    }
+    
+    // Create inner content elements
+    const quoteText = document.createElement('div');
+    quoteText.style.fontStyle = 'italic';
+    quoteText.style.marginBottom = '3px';
+    quoteText.textContent = `"${displayText}"`;
+    
+    const quoteAuthor = document.createElement('div');
+    quoteAuthor.style.fontWeight = 'bold';
+    quoteAuthor.style.fontSize = '10px';
+    quoteAuthor.textContent = `- ${quote.author}`;
+    
+    // Add content to the overlay
+    quoteOverlay.appendChild(quoteText);
+    quoteOverlay.appendChild(quoteAuthor);
+    
+    // Add the quote overlay to the page - append to body to ensure it's not constrained by other elements
+    document.body.appendChild(quoteOverlay);
+  }
+
   function renderTasks(tasks, backgroundIndex, category) {
     const tasksHeader =
       document.getElementById("tasks-header") || document.createElement("div");
